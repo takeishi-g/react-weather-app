@@ -7,8 +7,8 @@ type ResultsPropsType = {
     icon: string;
   };
 };
-const Results = (props: ResultsPropsType) => {
-  const { country, cityName, temperature, conditionText, icon } = props.results;
+const Results = ({results}: ResultsPropsType) => {
+  const { country, cityName, temperature, conditionText, icon } =results;
   return (
     <div>
       {country && <div className="results-country">{country}</div>}
@@ -26,7 +26,7 @@ const Results = (props: ResultsPropsType) => {
         </div>
       )}
     </div>
-  );
+  )
 };
 
 export default Results;

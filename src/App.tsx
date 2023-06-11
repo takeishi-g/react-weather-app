@@ -2,6 +2,7 @@ import { useState } from "react";
 import Title from "./components/Title";
 import Form from "./components/From";
 import Results from "./components/Results";
+import Loading from "./components/Loading";
 import "./App.css";
 
 type ResultsStateType = {
@@ -13,6 +14,7 @@ type ResultsStateType = {
 };
 
 function App() {
+  const [ loading, setLoading ] = useState<boolean>(false)
   const [city, setCity] = useState<string>("");
   const [results, setResults] = useState<ResultsStateType>({
     country: "",
@@ -20,11 +22,13 @@ function App() {
     temperature: "",
     conditionText: "",
     icon: "",
-  });
+  })
+
   const getWeather = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true)
     await fetch(
-      `https://api.weatherapi.com/v1/current.json?key=d5e39515a0004593ba0113615230906&q=${city}&aqi=no`
+      `https://proxy-server-orcin.vercel.app/weather-data?${city}`
     )
       .then((res) => res.json())
       .then((data) => {
@@ -34,15 +38,18 @@ function App() {
           temperature: data.current.temp_c,
           conditionText: data.current.condition.text,
           icon: data.current.condition.icon,
-        });
-      });
-  };
+        })
+        setCity("")
+        setLoading(false)
+      })
+      .catch(err => alert("エラーが発生しました。ページをリロードして、もう一度トライしてください。"))
+  }
   return (
     <div className="wrapper">
       <div className="container">
         <Title />
-        <Form setCity={setCity} getWeather={getWeather} />
-        <Results results={results} />
+        <Form setCity={setCity} getWeather={getWeather} city={city}/>
+        {loading ? <Loading /> : <Results results={results} />}
       </div>
     </div>
   );
